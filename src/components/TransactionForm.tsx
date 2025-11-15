@@ -3,8 +3,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { transactionSchema, formSchema } from "@/schemas/transactionSchema";
-import type { TransactionFormData } from "@/schemas/transactionSchema";
+import { formSchema } from "@/schemas/transactionSchema";
+
 import type { FormValues } from "@/schemas/transactionSchema";
 
 import { Button } from "@/components/ui/button";
@@ -32,8 +32,8 @@ export function TransactionForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       description: "",
-      amount: "", // << Agora 100% compatível
-      type: "income",
+      amount: 0, // << Agora 100% compatível
+      type: undefined,
     },
   });
 
@@ -41,10 +41,10 @@ export function TransactionForm() {
   async function onSubmit(data: FormValues) {
     try {
       // Nós explicitamente rodamos a transformação aqui
-      const finalData: TransactionFormData = transactionSchema.parse(data);
+      // const finalData: TransactionFormData = transactionSchema.parse(data);
 
-      console.log("DADOS FINAIS E PRONTOS:", finalData);
-      console.log("Tipo do amount:", typeof finalData.amount); // Vai ser "number"
+      console.log("DADOS FINAIS E PRONTOS:", data);
+      console.log("Tipo do amount:", typeof data.amount); // Vai ser "number"
     } catch (error) {
       console.error("Erro na transformação final:", error);
     }
