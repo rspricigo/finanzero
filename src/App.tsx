@@ -32,19 +32,21 @@ interface Transaction {
 function App() {
   // 3. Criar o estado para armazenar as transações
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  // 4. Novo estado para controlar o dialog
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  async function fetchTransactions() {
+    try {
+      // Chamada para o nosso handler GET do MSW
+      const response = await axios.get("/api/transactions");
+      setTransactions(response.data); // Armazena os dados no nosso estado
+    } catch (error) {
+      console.error("Erro ao buscar transações:", error);
+    }
+  }
 
   // 4. Usar useEffect para buscar os dados quando o componente montar
   useEffect(() => {
-    async function fetchTransactions() {
-      try {
-        // Chamada para o nosso handler GET do MSW
-        const response = await axios.get("/api/transactions");
-        setTransactions(response.data); // Armazena os dados no nosso estado
-      } catch (error) {
-        console.error("Erro ao buscar transações:", error);
-      }
-    }
-
     fetchTransactions();
   }, []); // O array vazio [] garante que esta função rode APENAS UMA VEZ
 
@@ -57,7 +59,7 @@ function App() {
         <header className=" flex items-center justify-between">
           <h1 className="text-2xl font-bold text-zinc-50">FinanZero</h1>
           {/* --- Início da Alteração do Dialog --- */}
-          <Dialog>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button>Nova Transação</Button>
             </DialogTrigger>
@@ -69,7 +71,11 @@ function App() {
                   Adicione uma nova receita ou despesa.
                 </DialogDescription>
               </DialogHeader>
-              <TransactionForm /> {/* <<< O formulário de verdade! */}
+              <TransactionForm
+                onTransactionCreated={fetchTransactions}
+                onCloseDialog={() => setIsDialogOpen(false)}
+              />{" "}
+              {/* <<< O formulário de verdade! */}
             </DialogContent>
           </Dialog>
           {/* --- Fim da Alteração do Dialog --- */}

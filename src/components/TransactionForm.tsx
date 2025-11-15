@@ -25,8 +25,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+// 1. Definimos o tipo das props que o componente recebe
+interface TransactionFormProps {
+  onTransactionCreated: () => void; // É uma função que não recebe nada e não retorna nada
+  onCloseDialog: () => void;
+}
+// 2. Adicionamos as props ao componente
 
-export function TransactionForm() {
+export function TransactionForm({
+  onTransactionCreated,
+  onCloseDialog,
+}: TransactionFormProps) {
   // 1. O useForm usa o FormValues (onde amount é string)
   const form = useForm<FormValues>({
     // 2. O resolver usa o formSchema (o que valida strings)
@@ -49,6 +58,10 @@ export function TransactionForm() {
       console.log("Enviando para a API:", data);
 
       await axios.post("/api/transactions", data);
+
+      // 3. AVISAMOS O PAI: "TERMINEI, PODE ATUALIZAR!"
+      onTransactionCreated();
+      onCloseDialog();
 
       alert("Transação salva com sucesso!");
     } catch (error) {
