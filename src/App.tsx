@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "./components/ui/table";
+import { TransactionForm } from "./components/TransactionForm";
 
 function App() {
   return (
@@ -39,9 +40,7 @@ function App() {
                   Adicione uma nova receita ou despesa.
                 </DialogDescription>
               </DialogHeader>
-
-              {/* Formulário virá aqui */}
-              <p>FORMULÁRIO</p>
+              <TransactionForm /> {/* <<< O formulário de verdade! */}
             </DialogContent>
           </Dialog>
           {/* --- Fim da Alteração do Dialog --- */}
