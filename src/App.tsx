@@ -17,8 +17,37 @@ import {
   TableRow,
 } from "./components/ui/table";
 import { TransactionForm } from "./components/TransactionForm";
+import { useState, useEffect } from "react"; // 1. Importar hooks
+import axios from "axios"; // 2. Importar axios
+
+// Vamos definir o formato de uma transação para usar com o TypeScript
+interface Transaction {
+  id: string;
+  description: string;
+  amount: number;
+  type: "income" | "expense";
+  createdAt: string;
+}
 
 function App() {
+  // 3. Criar o estado para armazenar as transações
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  // 4. Usar useEffect para buscar os dados quando o componente montar
+  useEffect(() => {
+    async function fetchTransactions() {
+      try {
+        // Chamada para o nosso handler GET do MSW
+        const response = await axios.get("/api/transactions");
+        setTransactions(response.data); // Armazena os dados no nosso estado
+      } catch (error) {
+        console.error("Erro ao buscar transações:", error);
+      }
+    }
+
+    fetchTransactions();
+  }, []); // O array vazio [] garante que esta função rode APENAS UMA VEZ
+
   return (
     // Container pricipal com fundo escuro e texto branco
     <div className="min-h-screen bg-zinc-950 text-zinc-50 p-6">
@@ -93,24 +122,30 @@ function App() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {/* Linha de exemplo 1 */}
-                  <TableRow>
-                    <TableCell>Salário</TableCell>
-                    <TableCell className="text-emerald-500">
-                      + R$ 5.000,00
-                    </TableCell>
-                    <TableCell>Receita</TableCell>
-                    <TableCell>10/11/2025</TableCell>
-                  </TableRow>
-                  {/* Linha de exemplo 2 */}
-                  <TableRow>
-                    <TableCell>Aluguel</TableCell>
-                    <TableCell className="text-red-500">
-                      - R$ 1.250,50
-                    </TableCell>
-                    <TableCell>Despesa</TableCell>
-                    <TableCell>05/11/2025</TableCell>
-                  </TableRow>
+                  {transactions.map((transaction) => (
+                    <TableRow key={transaction.id}>
+                      <TableCell>{transaction.description}</TableCell>
+                      <TableCell
+                        className={
+                          transaction.type === "income"
+                            ? "text-emerald-500"
+                            : "text-red-500"
+                        }
+                      >
+                        {transaction.type === "income" ? "+" : "-"}
+                        {transaction.amount.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                      </TableCell>
+                      <TableCell className="capitalize">
+                        {transaction.type === "income" ? "receita" : "despesa"}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(transaction.createdAt).toLocaleDateString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </CardContent>
