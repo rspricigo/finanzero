@@ -1,6 +1,7 @@
 // src/components/TransactionForm.tsx
 "use client"; // Diretiva necessária para o React Hook Form
 
+import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { formSchema } from "@/schemas/transactionSchema";
@@ -45,8 +46,14 @@ export function TransactionForm() {
 
       console.log("DADOS FINAIS E PRONTOS:", data);
       console.log("Tipo do amount:", typeof data.amount); // Vai ser "number"
+      console.log("Enviando para a API:", data);
+
+      await axios.post("/api/transactions", data);
+
+      alert("Transação salva com sucesso!");
     } catch (error) {
       console.error("Erro na transformação final:", error);
+      alert("Ops! Algo deu errado. Tente novamente.");
     }
   }
 
