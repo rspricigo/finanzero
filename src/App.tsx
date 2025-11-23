@@ -45,6 +45,20 @@ function App() {
     }
   }
 
+  const totals = transactions.reduce(
+    (acc, transaction) => {
+      if (transaction.type === "income") {
+        acc.income += transaction.amount;
+      } else {
+        acc.expense += transaction.amount;
+      }
+      return acc;
+    },
+    { income: 0, expense: 0 }
+  );
+
+  const balance = totals.income - totals.expense;
+
   // 4. Usar useEffect para buscar os dados quando o componente montar
   useEffect(() => {
     fetchTransactions();
@@ -85,29 +99,92 @@ function App() {
         <main className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Receitas</CardTitle>
+                {/* Ícone de Seta para cima */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="size-5 text-emerald-500"
+                >
+                  <path d="M12 5v14" />
+                  <path d="m17 10-5-5-5 5" />
+                </svg>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">R$ 5.000,00</p>
+                <p className="text-2xl font-bold">
+                  {totals.income.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </p>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Despesas</CardTitle>
+                {/* Ícone de Seta para baixo */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="size-5 text-red-500"
+                >
+                  <path d="M12 19V5" />
+                  <path d="m5 14 7 7 7-7" />
+                </svg>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">R$ 1.250,50</p>
+                <p className="text-2xl font-bold">
+                  {totals.expense.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </p>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Saldo</CardTitle>
+                {/* Ícone de Saldo */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="size-5 text-zinc-500"
+                >
+                  <line x1="12" x2="12" y1="2" y2="22" />
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">R$ 3.749,50</p>
+                <p className="text-2xl font-bold">
+                  {balance.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </p>
               </CardContent>
             </Card>
           </div>
