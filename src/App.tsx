@@ -59,6 +59,18 @@ function App() {
 
   const balance = totals.income - totals.expense;
 
+  async function handleDeleteTransaction(id: string) {
+    try {
+      await axios.delete(`/api/transactions/${id}`);
+      // Atualiza a lista de transações após a exclusão
+      await fetchTransactions();
+      alert("Transação deletada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao deletar transação:", error);
+      alert("Falha ao deletar a transação. Tente novamente.");
+    }
+  }
+
   // 4. Usar useEffect para buscar os dados quando o componente montar
   useEffect(() => {
     fetchTransactions();
@@ -202,6 +214,7 @@ function App() {
                     <TableHead>Valor</TableHead>
                     <TableHead>Tipo</TableHead>
                     <TableHead>Data</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -226,6 +239,17 @@ function App() {
                       </TableCell>
                       <TableCell>
                         {new Date(transaction.createdAt).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() =>
+                            handleDeleteTransaction(transaction.id)
+                          }
+                        >
+                          Excluir
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}

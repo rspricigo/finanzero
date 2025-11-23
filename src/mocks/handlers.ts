@@ -41,26 +41,44 @@ export const handlers = [
     return HttpResponse.json({ message: 'MSW is working!' })
   }),
 
-    // Handler para obter transações
-    http.get('/api/transactions', () => {
-      return HttpResponse.json(transactions)
-    }),
+  // Handler para obter transações
+  http.get('/api/transactions', () => {
+    return HttpResponse.json(transactions)
+  }),
 
-    // Handler para adicionar uma nova transação
-    http.post('/api/transactions', async ({ request }) => {
-      const newTransaction = await request.json() as Omit<Transaction, 'id' | 'createdAt'>
+  // Handles para deletar transação
+  http.delete('/api/transactions/:id', ({ params }) => {
+    const { id } = params as { id: string }
+    console.log(`[MSW] Deletando transação com ID: ${id}`);
+    // Encontra o índice da transação a ser deletada
+    const indexToDelete = transactions.findIndex(t => t.id === id);
 
-      console.log('[MSW] Dados recebidos no servidor mock:', newTransaction)
+    // Se não encontrar, retorna um erro
+    if (indexToDelete === -1) {
+      return new HttpResponse(null, { status: 404 }); // Not Found
+    }
+    // Remove a transação do nosso "banco de dados"
+    transactions.splice(indexToDelete, 1);
 
-      const transactionWithId: Transaction = {
-        id: faker.string.uuid(),
-        createdAt: new Date(),
-        ...newTransaction
-        }
+    // Retorna uma resposta de sucesso sem conteúdo
+    return new HttpResponse(null, { status: 204 }); // No Content
+  }),
 
-     // Adiciona a nova transação no topo da lista
+  // Handler para adicionar uma nova transação
+  http.post('/api/transactions', async ({ request }) => {
+    const newTransaction = await request.json() as Omit<Transaction, 'id' | 'createdAt'>
+
+    console.log('[MSW] Dados recebidos no servidor mock:', newTransaction)
+
+    const transactionWithId: Transaction = {
+      id: faker.string.uuid(),
+      createdAt: new Date(),
+      ...newTransaction
+    }
+
+    // Adiciona a nova transação no topo da lista
     transactions.unshift(transactionWithId)
 
-      return new HttpResponse(null, { status: 201 })
-    }),
+    return new HttpResponse(null, { status: 201 })
+  }),
 ]
